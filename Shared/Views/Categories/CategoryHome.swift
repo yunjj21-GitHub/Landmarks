@@ -8,24 +8,37 @@
 import SwiftUI
 
 struct CategoryHome: View {
-    @EnvironmentObject var modelDate : ModelData
+    @EnvironmentObject var modelData : ModelData
+    @State private var showingProfile = false
     
     var body: some View {
         NavigationView{
             List {
-                modelDate.features[0].image
+                modelData.features[0].image
                     .resizable()
                     .scaledToFill()
                     .frame(height : 200)
                     .clipped()
                     .listRowInsets(EdgeInsets())
                 
-                ForEach(modelDate.categories.keys.sorted(), id : \.self) { key in
-                    CategoryRow(categoryName: key, items: modelDate.categories[key]!)
+                ForEach(modelData.categories.keys.sorted(), id : \.self) { key in
+                    CategoryRow(categoryName: key, items: modelData.categories[key]!)
                 }
                 .listRowInsets(EdgeInsets())
             }
+            .listStyle(.inset)
             .navigationTitle("Featured")
+            .toolbar {
+                Button {
+                    showingProfile.toggle()
+                } label : {
+                    Label("User Profile", systemImage: "person.crop.circle")
+                }
+            }
+            .sheet(isPresented : $showingProfile) {
+                ProfileHost()
+                    .environmentObject(modelData)
+            }
         }
     }
 }
